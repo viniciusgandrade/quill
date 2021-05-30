@@ -1,13 +1,14 @@
 import cloneDeep from 'lodash.clonedeep';
 import isEqual from 'lodash.isequal';
 import merge from 'lodash.merge';
-import Delta, { AttributeMap } from 'quill-delta';
 import { LeafBlot } from 'parchment';
-import { Range } from './selection';
-import CursorBlot from '../blots/cursor';
+import { AttributeMap } from 'quill-delta';
 import Block, { BlockEmbed, bubbleFormats } from '../blots/block';
 import Break from '../blots/break';
+import CursorBlot from '../blots/cursor';
 import TextBlot, { escapeText } from '../blots/text';
+import Delta from '../utils/delta';
+import { Range } from './selection';
 
 const ASCII = /^[ -~]*$/;
 
