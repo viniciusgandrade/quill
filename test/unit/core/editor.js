@@ -492,6 +492,54 @@ describe('Editor', function() {
       expect(this.container).toEqualHTML('<p>0123</p><h1>56</h1><h2>89</h2>');
     });
 
+    it('replace block embed with embed', function() {
+      const editor = this.initialize(
+        Editor,
+        '<p>0123</p><iframe src="#" class="ql-video" frameborder="0" allowfullscreen="true"></iframe>',
+      );
+      editor.applyDelta(
+        new Delta()
+          .retain(5)
+          .delete(1)
+          .insert({ video: '#' }),
+      );
+      expect(this.container).toEqualHTML(
+        '<p>0123</p><iframe class="ql-video" frameborder="0" allowfullscreen="true" src="#"></iframe>',
+      );
+    });
+
+    it('replace block embed with embed and text', function() {
+      const editor = this.initialize(
+        Editor,
+        '<iframe src="#" class="ql-video" frameborder="0" allowfullscreen="true"></iframe><p>4567</p>',
+      );
+      editor.applyDelta(
+        new Delta()
+          .delete(1)
+          .insert({ video: '#' })
+          .insert('0123'),
+      );
+      expect(this.container).toEqualHTML(
+        '<iframe class="ql-video" frameborder="0" allowfullscreen="true" src="#"></iframe><p>01234567</p>',
+      );
+    });
+
+    it('replace all content with embed and text', function() {
+      const editor = this.initialize(
+        Editor,
+        '<iframe src="#" class="ql-video" frameborder="0" allowfullscreen="true"></iframe>',
+      );
+      editor.applyDelta(
+        new Delta()
+          .delete(1)
+          .insert({ video: '#' })
+          .insert('0123'),
+      );
+      expect(this.container).toEqualHTML(
+        '<iframe class="ql-video" frameborder="0" allowfullscreen="true" src="#"></iframe><p>0123</p>',
+      );
+    });
+
     it('code block', function() {
       const editor = this.initialize(Editor, {
         html:

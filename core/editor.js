@@ -20,9 +20,16 @@ class Editor {
   applyDelta(delta) {
     let consumeNextNewline = false;
     this.scroll.update();
-    let scrollLength = this.scroll.length();
     this.scroll.batchStart();
     const normalizedDelta = normalizeDelta(delta);
+    normalizedDelta.reduce((index, op) => {
+      if (typeof op.delete === 'number') {
+        this.scroll.deleteAt(index, op.delete);
+        return index;
+      }
+      return index + (op.insert ? 0 : op.retain);
+    }, 0);
+    let scrollLength = this.scroll.length();
     normalizedDelta.reduce((index, op) => {
       const length = op.retain || op.delete || op.insert.length || 1;
       let attributes = op.attributes || {};
@@ -58,14 +65,7 @@ class Editor {
       Object.keys(attributes).forEach(name => {
         this.scroll.formatAt(index, length, name, attributes[name]);
       });
-      return index + length;
-    }, 0);
-    normalizedDelta.reduce((index, op) => {
-      if (typeof op.delete === 'number') {
-        this.scroll.deleteAt(index, op.delete);
-        return index;
-      }
-      return index + (op.retain || op.insert.length || 1);
+      return index + (op.delete ? 0 : length);
     }, 0);
     this.scroll.batchEnd();
     this.scroll.optimize();
